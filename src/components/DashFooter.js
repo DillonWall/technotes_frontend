@@ -3,6 +3,7 @@ import { faHouse } from "@fortawesome/free-solid-svg-icons"
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const DashFooter = () => {
+
     const navigate = useNavigate()
     const { pathname } = useLocation()
 
@@ -28,7 +29,6 @@ const DashFooter = () => {
             <p>Status:</p>
         </footer>
     )
-
     return content
 }
 export default DashFooter

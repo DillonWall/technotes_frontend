@@ -13,10 +13,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         getUsers: builder.query({
             query: () => '/users',
             validateStatus: (response, result) => {
-                // Docs say that even if error is returned, the status may still be 200
                 return response.status === 200 && !result.isError
             },
-            keepUnusedDataFor: 5, // TODO: bump up in production (to say 60 sec). Best to have an env var
             transformResponse: responseData => {
                 const loadedUsers = responseData.map(user => {
                     user.id = user._id
@@ -33,11 +31,48 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 } else return [{ type: 'User', id: 'LIST' }]
             }
         }),
+        addNewUser: builder.mutation({
+            query: initialUserData => ({
+                url: '/users',
+                method: 'POST',
+                body: {
+                    ...initialUserData,
+                }
+            }),
+            invalidatesTags: [
+                { type: 'User', id: "LIST" }
+            ]
+        }),
+        updateUser: builder.mutation({
+            query: initialUserData => ({
+                url: '/users',
+                method: 'PATCH',
+                body: {
+                    ...initialUserData,
+                }
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: 'User', id: arg.id }
+            ]
+        }),
+        deleteUser: builder.mutation({
+            query: ({ id }) => ({
+                url: `/users`,
+                method: 'DELETE',
+                body: { id }
+            }),
+            invalidatesTags: (result, error, arg) => [
+                { type: 'User', id: arg.id }
+            ]
+        }),
     }),
 })
 
 export const {
     useGetUsersQuery,
+    useAddNewUserMutation,
+    useUpdateUserMutation,
+    useDeleteUserMutation,
 } = usersApiSlice
 
 // returns the query result object
